@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ezequiel Moreira — Links</title>
+  <meta name="description" content="Organizador de Presença Digital — São José dos Campos, BR">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:      #F4F4F4;
+      --white-pure: #FFFFFF;
+      --grey-light: #AAAAAA;
+      --grey:       #6E6E6E;
+      --grey-mid:   #444444;
+      --grey-dark:  #2A2A2A;
+      --grey-deep:  #1E1E1E;
+      --bg:         #141414;
+      --bg-card:    rgba(255,255,255,0.03);
+      --bg-card-h:  rgba(255,255,255,0.055);
+      --border:     rgba(255,255,255,0.06);
+      --border-h:   rgba(255,255,255,0.14);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9998; opacity: 0.08;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+    #volume {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 0%, #1d1d1d 0%, transparent 70%),
+        radial-gradient(ellipse 100% 50% at 50% 50%, #1b1b1b 0%, #141414 100%);
+    }
+    #vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9997;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(0,0,0,0.72) 100%);
+    }
+
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 1.5rem 5rem;
+    }
+
+    /* ── Avatar ── */
+    .avatar-wrap {
+      position: relative;
+      width: 88px; height: 88px;
+      margin-bottom: 1.75rem;
+      opacity: 0;
+    }
+    .avatar-wrap::before {
+      content: '';
+      position: absolute; inset: -28px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.025) 45%, transparent 70%);
+      filter: blur(14px);
+      animation: halo-breathe 4s ease-in-out infinite;
+    }
+    .avatar-wrap::after {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 35%, transparent 65%);
+      filter: blur(5px);
+      animation: halo-breathe 4s ease-in-out infinite;
+    }
+    @keyframes halo-breathe {
+      0%,100% { opacity: 0.75; transform: scale(1);    }
+      50%      { opacity: 1;    transform: scale(1.04); }
+    }
+    .avatar-ring {
+      position: absolute; inset: -1px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.13);
+      z-index: 3;
+    }
+    .avatar-img {
+      position: relative; z-index: 2;
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      background: var(--grey-deep);
+    }
+
+    /* ── Text ── */
+    .name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.45rem, 5vw, 1.85rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      text-align: center;
+      color: var(--white-pure);
+      margin-bottom: 0.5rem;
+      opacity: 0;
+    }
+    .tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--grey);
+      text-align: center;
+      margin-bottom: 0.3rem;
+      opacity: 0;
+    }
+    .location {
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      text-align: center;
+      margin-bottom: 2.75rem;
+      opacity: 0;
+    }
+
+    .sep {
+      width: 1px;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, var(--border), transparent);
+      margin: 0 auto 2.75rem;
+      opacity: 0;
+    }
+
+    /* ── Links ── */
+    .links {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .group-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.63rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin: 0.9rem 0 0.1rem;
+      opacity: 0;
+    }
+    .group-label::before {
+      content: '';
+      display: block;
+      width: 16px; height: 1px;
+      background: var(--grey-mid);
+      opacity: 0.5;
+    }
+
+    .link-item { opacity: 0; }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      padding: 1.05rem 1.2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .35s, background .35s, transform .3s, box-shadow .35s;
+    }
+    .link-btn::before {
+      content: '';
+      position: absolute;
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(255,255,255,0.045) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .35s;
+      transform: translate(-50%, -50%);
+      left: var(--mx, 50%);
+      top:  var(--my, 50%);
+    }
+    .link-btn:hover {
+      background: var(--bg-card-h);
+      border-color: var(--border-h);
+      transform: translateY(-3px);
+      box-shadow: 0 18px 38px rgba(0,0,0,0.35);
+    }
+    .link-btn:hover::before { opacity: 1; }
+    .link-btn:active { transform: translateY(0); }
+
+    /* CTA primário — fundo branco igual btn-primary da landing */
+    .link-btn.primary {
+      background: var(--white);
+      border-color: transparent;
+    }
+    .link-btn.primary .link-label { color: #111; }
+    .link-btn.primary .link-sub   { color: rgba(17,17,17,0.45); }
+    .link-btn.primary .link-arrow { color: rgba(17,17,17,0.35); }
+    .link-btn.primary .icon-wrap  {
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.07);
+    }
+    .link-btn.primary:hover {
+      background: var(--white-pure);
+      box-shadow: 0 10px 44px rgba(255,255,255,0.10);
+    }
+    .link-btn.primary::before {
+      background: radial-gradient(circle, rgba(0,0,0,0.025) 0%, transparent 70%);
+    }
+
+    .icon-wrap {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .icon-wrap svg { width: 17px; height: 17px; display: block; }
+
+    .link-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+      position: relative; z-index: 1;
+      flex: 1;
+    }
+    .link-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      line-height: 1;
+    }
+    .link-sub {
+      font-size: 0.71rem;
+      color: var(--grey);
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    .link-arrow {
+      color: var(--grey-mid);
+      position: relative; z-index: 1;
+      flex-shrink: 0;
+      transition: transform .25s, color .25s;
+    }
+    .link-btn:hover .link-arrow { transform: translateX(4px); }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 3.5rem;
+      text-align: center;
+      opacity: 0;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+    .footer-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      text-decoration: none;
+      transition: color .25s;
+    }
+    .footer-logo:hover { color: var(--white); }
+    .footer-sep { color: var(--grey-dark); font-size: 0.7rem; }
+    .footer-tag { font-size: 0.67rem; color: var(--grey-mid); font-weight: 300; }
+
+    .footer-socials {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .footer-socials a {
+      color: var(--grey-mid);
+      display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      transition: color .25s, border-color .25s, background .25s;
+    }
+    .footer-socials a:hover {
+      color: var(--white);
+      border-color: var(--border-h);
+      background: rgba(255,255,255,0.04);
+    }
+    .footer-socials svg { display: block; }
+  </style>
+</head>
+<body>
+
+<div id="noise"></div>
+<div id="volume"></div>
+<div id="vignette"></div>
+
+<main class="page">
+
+  <div class="avatar-wrap" id="avatar">
+    <div class="avatar-ring"></div>
+    <img class="avatar-img"
+      src="https://ezequiel-digital-organization.vercel.app/assets/profile.jpg"
+      alt="Ezequiel Moreira" />
+  </div>
+
+  <h1 class="name"    id="name">Ezequiel Moreira</h1>
+  <p class="tagline"  id="tagline">Arquitetura Digital</p>
+  <p class="location" id="location">São José dos Campos · BR</p>
+
+  <div class="sep" id="sep"></div>
+
+  <div class="links" id="links">
+
+    <!-- WhatsApp — CTA primário -->
+    <div class="link-item" id="l0">
+      <a href="https://wa.me/message/DT4AST4M72ADP1" target="_blank" rel="noopener" class="link-btn primary" data-spot>
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#111"/>
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.656 1.438 5.168L2 22l4.979-1.406A9.953 9.953 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a8 8 0 01-4.073-1.113l-.292-.173-3.022.854.853-2.948-.19-.303A8 8 0 014 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8z" fill="#111"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-label">Falar no WhatsApp</span>
+          <span class="link-sub">Resposta em até 24h</span>
+        </div>
+        <svg class="link-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="group-label" id="gl1">Portfólio &amp; Serviços</div>
+
+    <!-- Página principal -->
+    <div class="link-item" id="l1">
+      <a href="https://ezequiel-digital-organization.vercel.app/" target="_blank" rel="noopener" class="link-btn" data-spot>
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-label">Página Principal</span>
+          <span class="link-sub">Serviços, projetos e contato</span>
+        </div>
+        <svg class="link-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- AUKAN -->
+    <div class="link-item" id="l2">
+      <a href="https://aukan.com.br" target="_blank" rel="noopener" class="link-btn" data-spot>
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="12,3 22,20 2,20"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-label">AUKAN Studio</span>
+          <span class="link-sub">Agência digital — aukan.com.br</span>
+        </div>
+        <svg class="link-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <div class="group-label" id="gl2">Redes Sociais</div>
+
+    <!-- Instagram -->
+    <div class="link-item" id="l3">
+      <a href="https://instagram.com/ezequiel.digital7" target="_blank" rel="noopener" class="link-btn" data-spot>
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-label">@ezequiel.digital7</span>
+          <span class="link-sub">Dicas, bastidores e projetos</span>
+        </div>
+        <svg class="link-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="link-item" id="l4">
+      <a href="https://www.linkedin.com/in/ezequiel-donizetti-moreira-159a953b5/" target="_blank" rel="noopener" class="link-btn" data-spot>
+        <div class="icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+          </svg>
+        </div>
+        <div class="link-text">
+          <span class="link-label">LinkedIn</span>
+          <span class="link-sub">Perfil profissional</span>
+        </div>
+        <svg class="link-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <a href="https://aukan.com.br" class="footer-logo">AUKAN</a>
+      <span class="footer-sep">·</span>
+      <span class="footer-tag">Organizador de Presença Digital</span>
+    </div>
+    <div class="footer-socials">
+      <a href="https://instagram.com/ezequiel.digital7" target="_blank" aria-label="Instagram">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/ezequiel-donizetti-moreira-159a953b5/" target="_blank" aria-label="LinkedIn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      </a>
+      <a href="https://wa.me/message/DT4AST4M72ADP1" target="_blank" aria-label="WhatsApp">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+// ── Entrance — mesmo timing da landing ──
+gsap.set('#avatar', { opacity:0, scale:0.88, filter:'blur(10px)' });
+gsap.to('#avatar',  { opacity:1, scale:1, filter:'blur(0px)', duration:1.6, ease:'power3.out', delay:0.1 });
+
+gsap.fromTo('#name',    {opacity:0,y:20},{opacity:1,y:0,duration:1,   ease:'power3.out',delay:0.5});
+gsap.fromTo('#tagline', {opacity:0,y:16},{opacity:1,y:0,duration:0.9, ease:'power3.out',delay:0.65});
+gsap.fromTo('#location',{opacity:0,y:12},{opacity:1,y:0,duration:0.8, ease:'power3.out',delay:0.75});
+gsap.to('#sep', { opacity:1, duration:0.8, ease:'power3.out', delay:0.9 });
+
+gsap.fromTo('#gl1',{opacity:0,y:10},{opacity:1,y:0,duration:0.7,ease:'power3.out',delay:1.0});
+gsap.fromTo('#gl2',{opacity:0,y:10},{opacity:1,y:0,duration:0.7,ease:'power3.out',delay:1.35});
+
+['#l0','#l1','#l2','#l3','#l4'].forEach((id, i) => {
+  gsap.fromTo(id,{opacity:0,y:22},{opacity:1,y:0,duration:0.85,ease:'power3.out',delay:1.0+i*0.1});
+});
+
+gsap.fromTo('#footer',{opacity:0,y:14},{opacity:1,y:0,duration:0.8,ease:'power3.out',delay:1.6});
+
+// ── Spotlight — igual bento-card da landing ──
+document.querySelectorAll('[data-spot]').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top)  + 'px');
+  });
+});
+</script>
+</body>
+</html>
